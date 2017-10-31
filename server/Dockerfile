@@ -33,15 +33,15 @@ ADD artifacts /usr/share/cattle
 ADD service /service
 ENV S6_SERVICE_DIR /service
 
-COPY target/*static.tar.gz /s6-statics/
+ADD https://github.com/just-containers/s6-overlay/releases/download/v1.19.1.1/s6-overlay-amd64.tar.gz /s6-statics/s6-overlay-amd64-static.tar.gz
 
 EXPOSE 8080
 ENV CATTLE_HOST_API_PROXY_MODE embedded
 
 # Environment variables commonly updated when performing a release
-ENV CATTLE_RANCHER_SERVER_VERSION v1.6.11-rc5
+ENV CATTLE_RANCHER_SERVER_VERSION v1.6.11-rc6
 ENV DEFAULT_CATTLE_API_UI_INDEX //releases.rancher.com/ui/1.6.26
-ENV CATTLE_CATTLE_VERSION v0.183.27
+ENV CATTLE_CATTLE_VERSION v0.183.28
 ENV CATTLE_RANCHER_CLI_VERSION v0.6.5-rc4
 ENV CATTLE_RANCHER_COMPOSE_VERSION v0.12.5
 #ENV DEFAULT_CATTLE_CATALOG_URL='{"catalogs":{"community":{"url":"https://git.rancher.io/community-catalog.git","branch":"master"},"library":{"url":"https://git.rancher.io/rancher-catalog.git","branch":"${RELEASE}"}}}'
@@ -55,7 +55,7 @@ ENV DEFAULT_CATTLE_RANCHER_CLI_DARWIN_URL  https://releases.rancher.com/cli/${CA
 ENV DEFAULT_CATTLE_RANCHER_CLI_WINDOWS_URL https://releases.rancher.com/cli/${CATTLE_RANCHER_CLI_VERSION}/rancher-windows-386-${CATTLE_RANCHER_CLI_VERSION}.zip
 
 EXPOSE 3306
-ADD https://github.com/rancherio/cattle/releases/download/${CATTLE_CATTLE_VERSION}/cattle.jar /usr/share/cattle/
+ADD https://github.com/ajmadsen/cattle/releases/download/${CATTLE_CATTLE_VERSION}/cattle.jar /usr/share/cattle/
 
 RUN cd / && for i in $(ls /s6-statics/*static.tar.gz);do tar -C /usr -zxvf $i;done && rm -rf /s6-statics/*static.tar.gz && \
     mkdir -p $CATTLE_HOME && \
@@ -81,7 +81,7 @@ ENV DEFAULT_CATTLE_CATALOG_EXECUTE true
 ENV DEFAULT_CATTLE_AUTH_SERVICE_EXECUTE true
 ENV DEFAULT_CATTLE_WEBHOOK_SERVICE_EXECUTE true
 ENV DEFAULT_CATTLE_SECRETS_API_EXECUTE true
-ENV CATTLE_RANCHER_SERVER_IMAGE rancher/server
+ENV CATTLE_RANCHER_SERVER_IMAGE ajmadsen/rancher-server
 
 ENTRYPOINT ["/usr/bin/entry"]
 CMD ["/usr/bin/s6-svscan", "/service"]
